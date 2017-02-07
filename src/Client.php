@@ -80,12 +80,17 @@ class Client
     public function call($method, array $data)
     {
         try {
-            $response = $this->http->request('POST', $method, [
-                'headers' => [
-                    'X-Viber-Auth-Token' => $this->token
-                ],
-                'json' => $data
-            ]);
+			$options = [
+				'headers' => [
+					'X-Viber-Auth-Token' => $this->token
+				]
+			];
+
+			if (count($data)) {
+				$options['json'] = $data;
+			}
+
+            $response = $this->http->request('POST', $method, $options);
             return \Viber\Api\Response::create($response);
         } catch (\RuntimeException $e) {
             throw new ApiException($e->getMessage(), $e->getCode(), $e);
@@ -172,5 +177,16 @@ class Client
     public function sendMessage(Message $message)
     {
         return $this->call('send_message', $message->toApiArray());
+    }
+
+    /**
+     * Send messages to Viber users who subscribe to the PA.
+     *
+     * @param  \Viber\Api\Message $message
+     * @return \Viber\Api\Response
+     */
+    public function sendPublicMessage(Message $message)
+    {
+        return $this->call('post', $message->toApiArray());
     }
 }

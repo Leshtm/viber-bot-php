@@ -19,6 +19,13 @@ class Message extends Entity
     protected $receiver;
 
     /**
+     * Viber user id
+     *
+     * @var integer
+     */
+    protected $from;
+
+    /**
      * Message type
      *
      * @var string
@@ -59,6 +66,7 @@ class Message extends Entity
     public function toArray()
     {
         return [
+            'from' => $this->getFrom(),
             'receiver' => $this->getReceiver(),
             'type' => $this->getType(),
             'sender' => $this->getSender(),
@@ -194,6 +202,26 @@ class Message extends Entity
     public function setKeyboard(\Viber\Api\Keyboard $keyboard)
     {
         $this->keyboard = $keyboard;
+
+        return $this;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getFrom()
+    {
+        return $this->from;
+    }
+
+    /**
+     * @param integer $from
+     *
+     * @return self
+     */
+    public function setFrom($from)
+    {
+        $this->from = $from;
 
         return $this;
     }
