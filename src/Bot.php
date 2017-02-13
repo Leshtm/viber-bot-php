@@ -9,6 +9,7 @@ use Viber\Api\Event;
 use Viber\Api\Signature;
 use Viber\Api\Event\Factory;
 use Viber\Api\Entity;
+use Viber\Api\Message\Type;
 
 /**
  * Build bot with viber client
@@ -85,10 +86,27 @@ class Bot
      */
     public function onText($regexp, \Closure $handler)
     {
-        $this->managers[] = new Manager(function (Event $event) use ($regexp) {
+        $this->managers[] = new Manager(function (Event $event) use ($regexp) {			        
             return (
                 $event instanceof \Viber\Api\Event\Message
                 && preg_match($regexp, $event->getMessage()->getText())
+            );
+        }, $handler);
+        return $this;
+    }
+
+    /**
+     * Register location message handler by PCRE
+     *
+     * @param  Closure $handler event handler
+     * @return \Viber\Bot
+     */
+    public function onLocation(\Closure $handler)
+    {
+        $this->managers[] = new Manager(function (Event $event) {
+            return (
+                $event instanceof \Viber\Api\Event\Message
+                && $event->getMessage()->getType() === Type::LOCATION
             );
         }, $handler);
         return $this;
